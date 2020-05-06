@@ -1,0 +1,588 @@
+---
+title: "STA5092Z - EDA Assignment 1"
+author: "ALEX MIRUGWE - MRGALE005"
+date: '`r format(Sys.Date(), "%d-%B-%Y")`'
+output:
+  bookdown::pdf_book:
+    keep_tex: yes
+  pdf_document: default
+linkcolor: black
+fontsize: 11pt
+geometry: margin = 1.2in
+---
+<p>&nbsp;</p>
+
+
+<p>&nbsp;</p>
+
+**Declaration**
+
+1. I know that plagiarism is wrong. Plagiarism is to use another's work and pretend that it is one's own.
+
+2. This report is my own work.
+
+3. I have not allowed, and will not allow, anyone to copy my work with the intention of passing it off as his or her own work.
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+\pagebreak
+
+## Introduction
+
+This report entails analytical insights in the Kaggle's happiness datasets of years 2015 to 2019. Kaggle's datasets gives the happiness scores of 155 countries from different regions of the world based on several factors like life healthy expectancy, family, GDP per capita,trust in government (Perceptions of corruption) generosity, freedom, and dystopia residual.
+
+## PART I - Data Wrangling
+
+2. After unzipping the downloaded file, you will notice that there are 5 .csv files, for each year from 2015 to 2019. Extract these 5 .csv files into R, convert them into tibble format.
+
+
+```{r  echo=FALSE,cache=FALSE, results=FALSE, warning=FALSE, include=FALSE, warning=FALSE}
+#install.packages("tidyverse")
+library(tidyverse) #calling tidyverse package
+```
+Datasaets were extracted into R using the read.csv function.And then after reading all the five dataframes, they were converted into tibble using the as.tibble function.Tibble otherthan dataframe, it can never change the datatype of variables.
+```{r  echo=FALSE, warning=FALSE}
+# Reading the datasets of years 2015 to 2019
+happiness2015 <- read.csv("D:/UCT-MSc. Data Science/Semester 1/EDA=STA5092Z/Assignment/Dataset/2015.csv")
+
+happiness2016 <- read.csv("D:/UCT-MSc. Data Science/Semester 1/EDA=STA5092Z/Assignment/Dataset/2016.csv")
+
+happiness2017 <- read.csv("D:/UCT-MSc. Data Science/Semester 1/EDA=STA5092Z/Assignment/Dataset/2017.csv")
+
+happiness2018 <- read.csv("D:/UCT-MSc. Data Science/Semester 1/EDA=STA5092Z/Assignment/Dataset/2018.csv")
+
+happiness2019 <- read.csv("D:/UCT-MSc. Data Science/Semester 1/EDA=STA5092Z/Assignment/Dataset/2019.csv")
+
+#Converting the .csv files into the tibble format
+happiness2015 <- as.tibble(happiness2015)
+happiness2016 <- as.tibble(happiness2016)
+happiness2017 <- as.tibble(happiness2017)
+happiness2018 <- as.tibble(happiness2018)
+happiness2019 <- as.tibble(happiness2019)
+
+```
+
+
+3. Merge these 5 files into one single file called worldhappiness15 19.
+
+
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+
+#Creating a new variable of year assigned with 2015 in a 2015 dataset
+year_2015 <- happiness2015 %>%
+  mutate(year = 2015) 
+head(year_2015,5)
+
+#Creating a new variable of year assigned with 2016 in a 2016 dataset
+year_2016 <- happiness2016 %>%
+  mutate(year = 2016)
+head(year_2016,5)
+
+#Creating a new variable of year assigned with 2017 in a 2017 dataset
+year_2017 <- happiness2017 %>%
+  mutate(year = 2017)
+head(year_2017,5)
+
+#Creating a new variable of year assigned with 2018 in a 2018 dataset
+year_2018 <- happiness2018 %>%
+  mutate(year = 2018)
+head(year_2018,5)
+
+#Creating a new variable of year assigned with 2019 in a 2019 dataset
+year_2019 <- happiness2019 %>%
+  mutate(year = 2019)
+head(year_2019,5)
+```
+To easily identify which year each file belongs after merging the five datasets, a new variable of year is added to each dataset using mutate function.
+
+Before merging the datasets, similar variables which were named differently are renamed for uniformity across all the datasets. These includes Economy..GDP.per.Capita, Health..Life.Expectancy, Trust..Government.Corruption in 2015,2016 and 2017 datasets renamed to GDP.per.Capita, Healthy.life.expectancy, Perceptions.of.corruption respectively as they are in 2018 and 2019. Also Country.or.region, Score and Freedom.to.make.life.choices variables in years 2018 to 2019 are renamed to Country,Happiness.Score, Freedom respectively to resemble those of 2015,2016 and 2017.
+
+```{r  echo=FALSE,warning=FALSE,include=FALSE}
+
+#Renaming different variables 
+Variable_rename2015 <- year_2015 %>%
+  rename(GDP.per.capita = Economy..GDP.per.Capita.
+ ,Healthy.life.expectancy = Health..Life.Expectancy.,
+  Perceptions.of.corruption = Trust..Government.Corruption.)
+
+
+Variable_rename2016 <- year_2016 %>%
+  rename(GDP.per.capita = Economy..GDP.per.Capita.
+  ,Healthy.life.expectancy = Health..Life.Expectancy. ,
+  Perceptions.of.corruption = Trust..Government.Corruption.)
+
+
+Variable_rename2017 <- year_2017 %>%
+  rename(GDP.per.capita = Economy..GDP.per.Capita.,
+ Healthy.life.expectancy = Health..Life.Expectancy., 
+ Perceptions.of.corruption = Trust..Government.Corruption.)
+
+
+Variable_rename2018 <- year_2018 %>%
+  rename(Country = Country.or.region,
+  Happiness.Score = Score,Freedom = Freedom.to.make.life.choices, )
+
+
+Variable_rename2019 <- year_2019 %>%
+  rename(Country = Country.or.region,
+  Happiness.Score = Score,Freedom = Freedom.to.make.life.choices)
+
+
+#Merging the 5 file datasets into a single file
+
+#merging 2015 and 2016 datasets to form happiness15_16 datafram
+happiness15_16 <- merge(Variable_rename2015,Variable_rename2016, all = TRUE )
+
+
+#merging happiness15_16 with 2017 dataset create happiness15_17 dataset
+happiness15_17 <- merge(happiness15_16,Variable_rename2017, all = TRUE )
+
+
+#merging happiness15_17 with 2018 to create happiness15_18 dataset
+happiness15_18 <- merge(happiness15_17,Variable_rename2018, all = TRUE )
+
+
+#merging happiness15_18 with 2019 to create a single dataset for all the five years.
+happiness15_19 <- merge(happiness15_18,Variable_rename2019, 
+all = TRUE,stringsAsFactors = FALSE )
+head(happiness15_19,5)
+```
+
+```{r  echo=FALSE,warning=FALSE, include=FALSE}
+#Changing the datatype of Perceptions.of.corruption from char to numeric 
+happiness15_19$Perceptions.of.corruption <- as.numeric(happiness15_19$Perceptions.of.corruption)
+
+#Changing the datatype of year from numeric to factor
+happiness15_19$year <- as.factor(happiness15_19$year)
+
+#viewing the structure of the dataset happiness15_19
+str(happiness15_19)
+```
+After merging, the structure of the dataset happiness15_16 is viewed to ascertain the correctness of the datatypes of the different variables. Since year variable contains categorical data, its data type is converted from numeric to factor because factors are variables in R which take on a limited number of different values. Perceptions.of.corruption's datatype is changed from character to numeric because the variable data is numeric in nature.
+
+
+4. Create a region variable (i.e. Africa, Europe and Central Asia, etc.) using the country codes.
+```{r  echo=FALSE, warning=FALSE,include= FALSE}
+#creating a variable (region_ver) for regions in which countries belong
+
+happiness15_19$region_ver <- NA 
+
+#Countries in South Asia
+happiness15_19$region_ver[which(happiness15_19$Country %in% c(
+"Afghanistan", "Bangladesh", "Bhutan", "India", "Maldives", "Nepal",
+"Pakistan", "Sri Lanka"))] <- "South Asia"
+
+#Countries in Latin America and Caribbean
+happiness15_19$region_ver[which(happiness15_19$Country %in% c(
+  "Antigua and Barbuda", "Argentina", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Cuba, Dominica", "Dominican Republic", 
+  "Ecuador", "El Salvador", "Grenada", "Guatemala", "Guyana", 
+  "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama",
+  "Paraguay", "Peru", "St. Kitts and Nevis", "St. Lucia", 
+  "St. Vincent and the Grenadines", "Suriname",
+  "Trinidad and Tobago", "Uruguay", 
+  "República Bolivariana de Venezuela"))] <- "Latin America and Caribbean"
+
+#Countries in East Asia and Pacific
+happiness15_19$region_ver[which(happiness15_19$Country %in% c(
+  "American Samoa", "Cambodia", "China", "Fiji", "Indonesia", 
+  "Kiribati", "Democratic Republic of Korea", "Republic of Korea",
+  "Lao People's Democratic Republic", "Malaysia", "Marshall Islands",
+  "Federated States of Micronesia", "Mongolia", "Myanmar", "Palau",
+  "Papua New Guinea", "Philippines", "Samoa", "Solomon Islands", 
+  "Thailand", "Timor-Leste", "Tonga, Tuvalu", "Vanuatu", 
+  "Vietnam"))] <- "East Asia and Pacific"
+
+#countries in North America
+happiness15_19$region_ver[which(happiness15_19$Country %in% c("Canada", 
+"Costa Rica", "United States", "Mexico","Panama","Trinidad and Tobago",
+"El Salvador", "Belize", "Guatemala","Jamaica", 
+"Nicaragua", "Dominican Republic", "Honduras",
+"Haiti"))] <- "North America"
+
+#Countries Middle East and North Africa
+happiness15_19$region_ver[which(happiness15_19$Country %in% c("Algeria", 
+ "Djibouti", "Arab Republic of Egypt", "Islamic Republic of Iran", "Iraq", 
+"Jordan","Lebanon", "Libya", "Morocco", "Syrian Arab Republic", 
+"Tunisia", "West Bank and Gaza","Republic of Yemen"))] <- "Middle East and North Africa"
+
+#Countries in Europe and Central Asia
+happiness15_19$region_ver[which(happiness15_19$Country %in% c(
+  "Albania", "Armenia", "Azerbaijan", "Belarus", "Bosnia and Herzegovina",
+  "Bulgaria", "Croatia", "Georgia", "Kazakhstan", "Kosovo", "Kyrgyz Republic", "Latvia", "Lithuania", "Former Yugoslav Republic of Macedonia",
+  "Moldova", "Montenegro", "Poland", "Romania", "Russian Federation",
+  "Serbia", "Tajikistan", "Turkey", "Turkmenistan", "Ukraine",
+  "Uzbekistan"))] <- "Europe and Central Asia"
+
+#the rest of the countries belong to the African region
+happiness15_19$region_ver[which(is.na(happiness15_19$region_ver))] <- "Africa"
+
+
+# since the region_ver is categorical,connverting it to factor
+happiness15_19$region_ver <- as.factor(happiness15_19$region_ver)
+
+#viewing the structure of the dataframe
+glimpse(happiness15_19)
+
+```
+For better analysis, I created a new variable called region_ver representing world regions and these include South Asia,Latin America and Caribbean, East Asia and Pacific, East Asia and Pacific,North America, Middle East and North Africa, Europe and Central Asia and Africa. Categorizing countries into regions helps in identifying how different facorts affect happiness scores in different parts of the worls.
+And since the region_ver is catergorical, I changed its datatype to factor in order to bring out the visualization of differect aspects of the dataset (happiness15_19) very well. 
+
+
+
+## PART II - Data Summaries and Visualizations
+
+1. What is your total sample size for each year in the worldhappiness15_19 dataframe(tibble) you created in Part I?
+
+The structure of worldhappiness15_19 shows that the dataset has 782 observations and 20 variables. Country, year and region_ver are factor variables, Overall ranks and Happiness rank are intergers integer, and the rest are numeric.
+
+To determine the total size of each year in the dataset I used the filter function to extract out an individual year and then determine its dimesions.2015 has 158 observations and 20 variabbles, 2016 has 157 observations and 20 variables, 2017 has 155 observations and 20 variablee, 2018 has 156 observations and 20 variables and finally 2019 has 156 observations and 20 variables.
+
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#viewing the structure of worldhappiness15_19 dataset
+str(happiness15_19)
+
+#Filtering out only 2015 observations
+size_2015 <- happiness15_19 %>%
+  filter(year == 2015)
+
+# size of year 2015 in the worldhappiness15_16
+dim(size_2015)
+
+#Filtering out only 2016 observations
+size_2016 <- happiness15_19 %>%
+  filter(year == 2016)
+
+# size of year 2016 in the worldhappiness15_16
+dim(size_2016)
+
+#Filtering out only 2017 observations
+size_2017 <- happiness15_19 %>%
+  filter(year == 2017)
+
+#sample size of year 2017 in the worldhappiness15_16
+dim(size_2017)
+
+#Filtering out only 2018 observations
+size_2018 <- happiness15_19 %>%
+  filter(year == 2018)
+
+#sample size of year 2018 in the worldhappiness15_16
+dim(size_2018)
+
+#Filtering out only 2019 observations
+size_2019 <- happiness15_19 %>%
+  filter(year == 2019)
+
+#sample size of year 2019 in the worldhappiness15_16
+dim(size_2019)
+```
+
+
+2. Are there any missing values and outliers in the following variables? What is your definition of an outlier?
+
++ **GDP per capita**
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#missing values in GDP per capita variable
+happiness15_19 %>%
+  filter(is.na(GDP.per.capita))
+```
+There is no missing value in the GDP per capita variable. This means that every country's GDP per capita value for all countries over the five years was captured.This was determined using the filter function combined with is.na which finds the missing values in a column.
+
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#outliers in the GDp per capita variable
+happiness15_19 %>%
+  select(GDP.per.capita) %>%
+  summary()
+```
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3}
+#Plotting a boxplot to identify outliers in the GDP per capita values
+happiness15_19 %>%
+  ggplot(aes(x = year, y = GDP.per.capita)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot (outlier.color = "red") + 
+  labs(title = "The GDP per capita of countries based on years",
+  caption = "Fig 1.") +
+  theme_bw()
+  
+```
+Based on the summary data of the GDP per capita variable, the minimum value is 0.0000 which seems to be an outlier because however small a country's GDP can be, its per capita income cannot be zero (0).
+
+To continue analyzing the GDP per capita variable to identify outlier values exiting in the data, a boxplot of GDP per capita versus year was used.
+From fig 1, its observed that in 2018 there is a large value (2.0960) which appears to be distant from other points hence making it an outlier in the data.
+
++ **Happiness score**
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+
+#Finding whether there are missing value in Happiness score variable
+happiness15_19 %>%
+  filter(is.na(Happiness.Score))
+```
+By using the filter and is.na functions its observed that there are no missiong values in the Happiness score column.
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3}
+#Find outliers in the Happiness scores values
+happiness15_19 %>%
+  ggplot(aes(x = year, y = Happiness.Score)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot()  + 
+  labs(title = "The Happiness scores of countries based on years",
+   caption = "Fig 2") +
+  theme_bw()
+```
+Fig 2 shows that there are no outliers identified in the Happiness scores's variable. This means all values are within the range and no value is distant from others.
+
++ **Social support**
+```{r  echo=FALSE, warning=FALSE}
+#Missing values in the socail support variable
+happiness15_19 %>%
+  filter(is.na(Social.support)) %>%
+  dim()
+```
+Socail support was only included in 2018 and 2019 datasets. And there 470 missing values in the Social support variable that are observed through the use of filter and is.na functions. 
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3}
+#Plotting a boxplot to identify outliers in the Social Support values
+happiness15_19 %>%
+  filter(!is.na(Social.support)) %>% #Elimating out missing values
+  ggplot(aes(x = year, y = Social.support)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot (outlier.color = "blue") + 
+  labs(title = "The Social Support of countries based on years",
+  caption = "Fig 3") +
+  theme_bw()
+```
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#Summary structure of the non-missing social support values
+happiness15_19 %>%
+  select(Social.support) %>%
+  filter(!is.na(Social.support)) %>%
+  summary()
+```
+From fig 3, there are three outliers values in year 2018 and four in 2019 as indicated by the blue dots. To support the statement above, the summary structure of the social support values also shows that the minimum value is 0.000 which is a bit distant from the median of 1.266.
+
++ **Healthy life expectancy**
+```{r  echo=FALSE, warning=FALSE}
+#Missing values in the Healthy life expectancy variable
+happiness15_19 %>%
+  filter(is.na(Healthy.life.expectancy)) %>%
+  dim()
+```
+The are no missing values in the Healthy life expectancy column since the out of the filter combined with is.na (finds missing values) is zero observations
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3.5}
+#Plotting a boxplot to identify outliers in the Healthy life expectancy values
+happiness15_19 %>%
+  ggplot(aes(x = year, y = Healthy.life.expectancy)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot(outlier.color = "blue") + 
+  labs(title = "The Healthy life expectancy of countries based on years",
+  caption = "Fig 4") +
+  theme_bw()
+```
+In 2019, from fig 4, there is an outlier where the minimum Healthy life expectancy of that year is 0.000 which unrealistic. 
+
++ **Freedom **
+```{r  echo=FALSE, warning=FALSE}
+#Missing values in the Freedom to make life choices variable
+happiness15_19 %>%
+  filter(is.na(Freedom)) %>%
+  dim()
+```
+Since the output is zero observations when filter-ia.na is applied,then there are no missing values in the column of Freedom.
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3}
+#Plotting a boxplot to identify outliers in the Freedom  values
+ happiness15_19 %>%
+  filter(!is.na(Freedom)) %>% #Elimating out missing values
+  ggplot(aes(x = year, y = Freedom)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot (outlier.color = "green") + 
+  labs(title = "The Freedom  of countries based on years",
+  caption = "Fig 5",fig.caption = "The showing outliers values in the freedom column") +
+  theme_bw()
+```
+Fig 5 of Freedom versus year for the non missing values shows that there are some outliers in the data, two in 2018 and one in 2019.This because these values are a bit distant from the medium value.
+
++ **Perceptions of corruption**
+```{r  echo=FALSE}
+#Missing values in the Perceptions of corruption variable
+happiness15_19 %>%
+  filter(is.na(Perceptions.of.corruption)) %>%
+  dim()
+```
+There is one missing value in the Perceptions of corruption column
+
+```{r  echo=FALSE, warning=FALSE,fig.height=3}
+#Plotting a boxplot to identify outliers in the Perceptions of corruption values
+happiness15_19 %>%
+  filter(!is.na(Perceptions.of.corruption)) %>% #Elimating out missing values
+  ggplot(aes(x = year, y = Perceptions.of.corruption)) +
+  #Converting year varaiable into factor since its categorical data
+  geom_boxplot (outlier.color = "green") + 
+  labs(title = "The Perceptions of corruption of countries based on years",
+  caption = "Fig 6") +
+  theme_bw()
+```
+
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#Summary structure of the non-missing Perceptions of corruption values
+happiness15_19 %>%
+  select(Perceptions.of.corruption) %>%
+  filter(!is.na(Perceptions.of.corruption)) %>%
+  summary()
+```
+Basing on Fig 6 and the summarized values of the Perception of corruption column, the there are many outliers in the column since there exits multiple values which a distant from the medium. These values are shown the green dots in fig 6.
+
+
+
+3. Create a table for Happiness Score and GDP per capita for only two countries
+(Afghanistan and Switzerland) for only 2016.
+
+
+```{r  echo=FALSE, warning=FALSE}
+#Filtering out Afghanistan and Switzerland for year 2016
+Selected_happiness <- happiness15_19 %>%
+  select(Happiness.Score,GDP.per.capita,Country,year) %>%
+  filter(Country == "Afghanistan" | Country == "Switzerland", year == 2016 )
+head(Selected_happiness)
+```
+To create the table, firstly I selected the intended variables (Happiness.Score, GDP.per.capita, Country,year) from the dataset (happiness15_19) and then applied a filter function to output the desired observations. 
+
+
+
+4. Plot the Happiness Score vs other variables (one at a time) for all countries,with the year variable being a factor grid. Colour code your points with different regions. 
+
+
+```{r  echo=FALSE, warning=FALSE,fig.width= 10}
+#a relation plot of happiness.score and GDP per capita
+happiness15_19 %>%
+  ggplot(aes(x = GDP.per.capita*10, y = Happiness.Score,col = region_ver)) +
+  geom_point() +
+  facet_wrap(~year) +
+  theme_bw() + labs(title = "Scatter plot showing how Happiness 
+                    score relate with GDP per capita", caption = "Fig 7")
+
+```
+Fig 7 shows that there a correlation between GDP per capita and Happiness Scores. 2019 has the highest correlation according the figure.
+
+
+```{r  echo=FALSE, warning=FALSE,fig.width= 10}
+#a relation plot of happiness.score and Healthy.life.expectancy
+happiness15_19 %>%
+  ggplot(aes(x = Healthy.life.expectancy*10, y = Happiness.Score,
+  col = region_ver)) +
+  geom_point() +
+  facet_wrap(~year) +
+  theme_bw() + 
+  labs(title = "Scatter plot showing how Happiness score relate
+                    with Healthy life expectancy ", caption = "Fig 7")
+ 
+```
+Fig 8 shows that there is positive correlaton between Healthy life and expectancy and Happiness Scores. Healthy life expectancy varies proportionally with Happiness Score over the five years with  2019 being highest compared to other years.
+
+
+```{r  echo=FALSE, warning=FALSE,fig.width= 10}
+#a relation plot of happiness.score and Generosity
+happiness15_19 %>%
+  ggplot(aes(x = Generosity*10, y = Happiness.Score,col = region_ver)) +
+  geom_point() +
+  facet_wrap(~year) +
+  theme_bw() + 
+  labs(title = "Scatter plot showing how Happiness score relate with Generosity ", caption = "Fig 8")
+
+```
+Basing on figure 8, there seems to be a moderate correlation between Generosity and Happiness scores because most points are centred in the plot.
+
+
+```{r  echo=FALSE, warning=FALSE,fig.width= 10}
+#a relation plot of happiness.score and Freedom
+happiness15_19 %>%
+  ggplot(aes(x = Freedom, y = Happiness.Score,col = region_ver)) +
+  geom_point() +
+  facet_wrap(~year) +
+  theme_bw() + 
+  labs(title = "Scatter plot showing how Happiness score relate with Freedom ", caption = "Fig 9")
+```
+Freedom in 2018 and 2019 is more correlated to Happiness Score than the other years as demostrated by figure 9.
+
+
+```{r  echo=FALSE, warning=FALSE,fig.width= 10}
+#a relation plot of happiness.score and Perceptions.of.corruption
+happiness15_19 %>%
+  ggplot(aes(x = Perceptions.of.corruption , y = Happiness.Score,col = region_ver)) +
+  geom_point() +
+  facet_wrap(~year) +
+  theme_bw() +
+  labs(title = "Scatter plot showing how Happiness score relate with Perceptions.of.corruption ",caption = "Fig 10")
+```
+There is a low correlation between Perceptions of corruption and happiness scores for over the five years (2015 to 2019). This is being demostrated by figure 10 as there are more concentration of points at the lower side of the graph.
+
+
+5. Calculate the yearly average of each variable for the countries within the same region. Plot this information on a regional grid.
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+#calculating mean values of different selected columns based on grouping function
+ave <- happiness15_19 %>%
+        select(2:8,20)%>%
+         group_by(year,region_ver) %>%
+         summarise_all(funs(mean))
+
+str(happiness15_19)
+```
+
+```{r  echo=FALSE, warning=FALSE,include=FALSE}
+library(reshape2)
+#melting data to create a single column of all averaged variables.
+ave_melt = melt(ave, id = "region_ver")
+
+new_data <- ave_melt[-c(1:35),]
+
+```
+
+```{r  echo=FALSE, warning=FALSE,fig.width=10,fig.height=5}
+ggplot(new_data, aes(y= value , 
+  x= region_ver, color=region_ver, fill=region_ver)) + 
+  geom_bar( stat="identity") +    
+  facet_wrap(~variable) + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Yearly Average of variables for different regions", 
+       y = "Variable averages", caption = "Fig 11") 
+
+
+
+```
+Before plotting data on the grid, the summarized data was metled first.The melt function helped in creating a single column of data of different averaged variables.
+
+Figure 11 shows that North America and Latin America and Caribbean have the highest happiness scores compared to other regions.And for other variables, all regions relatively have the same average points for years 2015 to 2019.
+
+
+6. Finally create a plot that you think would be a useful information given this dataset.
+```{r  echo=FALSE, warning=FALSE}
+overallview <- happiness15_19 %>%
+  group_by(region_ver) %>%
+  summarise(Happiness_Score_Average15_19 = mean(Happiness.Score, na.rm = TRUE))
+
+
+overallview %>%
+  ggplot(aes(x = region_ver, y = Happiness_Score_Average15_19)) +
+  geom_histogram(stat = "identity",
+  binwidth = function(x) (max(x)-min(x)) / sqrt(length(x)), color="darkblue", fill="red")  + theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) + 
+labs(title = "The histogram showing the overall average Happiness Score of different regions",caption = "Fig 12")
+
+  
+
+```
+In conclusion, basing on the graph (overall happiness score mean against Regions) North America and Latin America and Caribbean have the highest Happiness Scores compared to other regions.
+
+\pagebreak
+## Appendix 
+```{r, ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+```
