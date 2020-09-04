@@ -1,6 +1,6 @@
 ---
-title: "STA5092Z - EDA Assignment 1"
-author: "ALEX MIRUGWE - MRGALE005"
+title: "Kaggle-s--World-Happiness-Report-Analysis"
+author: "ALEX MIRUGWE"
 date: '`r format(Sys.Date(), "%d-%B-%Y")`'
 output:
   bookdown::pdf_book:
@@ -14,14 +14,6 @@ geometry: margin = 1.2in
 
 
 <p>&nbsp;</p>
-
-**Declaration**
-
-1. I know that plagiarism is wrong. Plagiarism is to use another's work and pretend that it is one's own.
-
-2. This report is my own work.
-
-3. I have not allowed, and will not allow, anyone to copy my work with the intention of passing it off as his or her own work.
 
 
 
